@@ -10,8 +10,8 @@ interface SearchResult {
 }
 
 class LinkedList {
-    private headNode: ListNode;
-    private tailNode: ListNode;
+    protected headNode: ListNode;
+    protected tailNode: ListNode;
     protected listLength: number;
 
     constructor(headValue: any){
@@ -119,3 +119,53 @@ class LinkedList {
     }
 
 }
+
+class DoubleLinkedList extends LinkedList {
+    constructor(headValue: any, tailValue?: any){
+        super(headValue);
+        if( tailValue ){
+            this.headNode = this.valueToNode(headValue);
+            this.tailNode = this.valueToNode(tailValue, this.headNode);
+            this.headNode.next = this.tailNode;
+            this.listLength = 2;
+        }
+    }
+
+    protected valueToNode = (value: any, previous:ListNode|null = null, next: ListNode|null = null ): ListNode => ({
+        previous: previous,
+        value: value,
+        next: next
+    });
+
+    public add( value: any ): void {
+        const newNode: ListNode = this.valueToNode(value);
+        this.tailNode.next = newNode;
+        newNode.previous = this.tailNode;
+        this.tailNode = newNode;
+        this.listLength++;
+    }
+
+    public find(value: any, verbose: boolean = false, index: boolean = false): any {
+        const searchResult: SearchResult = {
+            index: -1,
+            result: false
+        };
+        let topIndex: number = 0;
+        let endIndex: number = this.listLength - 1;
+        let currentTop: ListNode = this.headNode;
+        let currentEnd: ListNode = this.tailNode;
+        while( !(currentEnd.next == currentTop) ){
+            if( currentTop.value === value || currentEnd.value === value ){
+                searchResult.result = currentTop.value === value ? currentTop : currentEnd;
+                searchResult.index = currentTop.value === value ? topIndex : endIndex;
+                return verbose ? searchResult : ( index ? searchResult.index : searchResult.result );
+            }
+            currentTop = currentTop.next;
+            currentEnd = currentEnd.previous;
+            topIndex++;
+            endIndex--;
+        }
+
+        return verbose ? searchResult : ( index ? searchResult.index : searchResult.result );;
+    }
+};
