@@ -3,7 +3,6 @@ interface ListNode {
     next: ListNode | null;
     previous?: ListNode | null;
 }
-
 interface SearchResult {
     index: number;
     result: any;
